@@ -17,13 +17,13 @@ import {
 import { Pencil, Trash } from "lucide-react";
 
 const Clientes = () => {
-  const [data, setData] = useState({});
+  const [data, setData] = useState([]);
   const [abrirModal, setAbrirModal] = useState(false);
-  const [nuevoCliente, setNuevoCliente] = useState({});
+  const [nuevoCliente, setNuevoCliente] = useState();
   const [abrirModalEditar, setAbrirModalEditar] = useState(false);
-  const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
+  const [clienteSeleccionado, setClienteSeleccionado] = useState();
   const [abrirModalBorrar, setAbrirModalBorrar] = useState(false);
-  const [clienteBorrar, setClienteBorrar] = useState(null);
+  const [clienteBorrar, setClienteBorrar] = useState();
 
   const columns = useMemo(() => [
     {
@@ -94,6 +94,7 @@ const Clientes = () => {
 
   const updateCliente = async () => {
     try {
+      console.log(clienteSeleccionado);
       await put(
         `/cliente/${clienteSeleccionado.Id_Cliente}`,
         clienteSeleccionado
@@ -119,18 +120,18 @@ const Clientes = () => {
 
   const ActualizarCliente = (e) => {
     const { name, value } = e.target;
-    setNuevoCliente((clientePrevio) => ({
-      ...clientePrevio,
+    setNuevoCliente({
+      ...nuevoCliente,
       [name]: value,
-    }));
+    });
   };
 
-  const ActualizarClienteSeleccionado = async () => {
-    const { name, value } = nuevoCliente;
-    setClienteSeleccionado((clientePrevio) => ({
-      ...clientePrevio,
+  const ActualizarClienteSeleccionado = async (e) => {
+    const { name, value } = e.target;
+    setClienteSeleccionado({
+      ...clienteSeleccionado,
       [name]: value,
-    }));
+    });
   };
 
   const table = useMaterialReactTable({
