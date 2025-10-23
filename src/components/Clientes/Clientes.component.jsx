@@ -1,25 +1,20 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, memo } from "react";
 import { get, post, put, remove } from "../../helpers/httpService";
 import {
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
-import {
-  Button,
-  IconButton,
-  Typography,
-  Dialog,
-  DialogActions,
-  DialogTitle,
-  DialogContent,
-  TextField,
-} from "@mui/material";
+import { toast } from "react-toastify";
+import { toastConfiguracion } from "../../helpers/toastConfiguracion";
+import { Button, IconButton, Typography } from "@mui/material";
 import { Pencil, Trash } from "lucide-react";
+import NuevoCliente from "./NuevoCliente.component";
+import EditarCliente from "./EditarCliente.componente";
+import BorrarCliente from "./BorrarCliente.component";
 
 const Clientes = () => {
   const [data, setData] = useState([]);
   const [abrirModal, setAbrirModal] = useState(false);
-  const [nuevoCliente, setNuevoCliente] = useState();
   const [abrirModalEditar, setAbrirModalEditar] = useState(false);
   const [clienteSeleccionado, setClienteSeleccionado] = useState();
   const [abrirModalBorrar, setAbrirModalBorrar] = useState(false);
@@ -78,32 +73,32 @@ const Clientes = () => {
       setData(response);
     } catch {
       console.log("Error");
+      toast.error("¡Error al obtener clientes!", toastConfiguracion);
     }
   };
 
-  const newCliente = async () => {
+  const newCliente = async (cliente) => {
     try {
-      await post("/cliente", nuevoCliente);
-      setNuevoCliente({});
+      await post("/cliente", cliente);
       setAbrirModal(false);
       fetchClientes();
+      toast.success("¡Cliente agregado!", toastConfiguracion);
     } catch {
       console.log("Error");
+      toast.error("¡Error al agregar cliente!", toastConfiguracion);
     }
   };
 
-  const updateCliente = async () => {
+  const updateCliente = async (cliente) => {
     try {
-      console.log(clienteSeleccionado);
-      await put(
-        `/cliente/${clienteSeleccionado.Id_Cliente}`,
-        clienteSeleccionado
-      );
+      await put(`/cliente/${cliente.Id_Cliente}`, cliente);
       setClienteSeleccionado(null);
       setAbrirModalEditar(false);
       fetchClientes();
+      toast.success("¡Cliente actualizado!", toastConfiguracion);
     } catch {
       console.log("Error");
+      toast.error("¡Error al actualizar cliente!", toastConfiguracion);
     }
   };
 
@@ -113,25 +108,11 @@ const Clientes = () => {
       setClienteBorrar(null);
       setAbrirModalBorrar(false);
       fetchClientes();
+      toast.success("¡Cliente eliminado!", toastConfiguracion);
     } catch {
       console.log("Error");
+      toast.error("¡Error al eliminar cliente!", toastConfiguracion);
     }
-  };
-
-  const ActualizarCliente = (e) => {
-    const { name, value } = e.target;
-    setNuevoCliente({
-      ...nuevoCliente,
-      [name]: value,
-    });
-  };
-
-  const ActualizarClienteSeleccionado = async (e) => {
-    const { name, value } = e.target;
-    setClienteSeleccionado({
-      ...clienteSeleccionado,
-      [name]: value,
-    });
   };
 
   const table = useMaterialReactTable({
@@ -169,6 +150,11 @@ const Clientes = () => {
     ),
   });
 
+  //Memorizacion para prevenir renders innecesarios
+  const MemorizedNuevoCliente = memo(NuevoCliente);
+  const MemorizedEditarCliente = memo(EditarCliente);
+  const MemorizedBorrarCliente = memo(BorrarCliente);
+
   return (
     <div>
       <Typography>Clientes</Typography>
@@ -176,194 +162,23 @@ const Clientes = () => {
         Registrar Cliente
       </Button>
       <MaterialReactTable table={table} />
-
-      <Dialog
+      <MemorizedNuevoCliente
         open={abrirModal}
         onClose={() => setAbrirModal(false)}
-        maxWidth="sm"
-      >
-        <DialogTitle>Registrar Cliente</DialogTitle>
-        <DialogContent>
-          <TextField
-            name="Nombre"
-            fullWidth
-            label="Nombre"
-            variant="outlined"
-            required
-            sx={{ marginTop: 2 }}
-            onChange={ActualizarCliente}
-          />
-          <TextField
-            name="Apellido"
-            fullWidth
-            label="Apellido"
-            variant="outlined"
-            required
-            sx={{ marginTop: 2 }}
-            onChange={ActualizarCliente}
-          />
-          <TextField
-            name="Telefono"
-            fullWidth
-            label="Telefono"
-            variant="outlined"
-            sx={{ marginTop: 2 }}
-            onChange={ActualizarCliente}
-          />
-          <TextField
-            name="Email"
-            fullWidth
-            label="Email"
-            variant="outlined"
-            required
-            sx={{ marginTop: 2 }}
-            onChange={ActualizarCliente}
-          />
-          <TextField
-            name="Calle"
-            label="Calle"
-            variant="outlined"
-            sx={{ marginTop: 2, width: "60%" }}
-            onChange={ActualizarCliente}
-          />
-          <TextField
-            name="Numero"
-            label="Numero"
-            variant="outlined"
-            sx={{ marginTop: 2, width: "35%", marginLeft: "5%" }}
-            onChange={ActualizarCliente}
-          />
-          <TextField
-            name="Barrio"
-            fullWidth
-            label="Barrio"
-            variant="outlined"
-            sx={{ marginTop: 2 }}
-            onChange={ActualizarCliente}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => setAbrirModal(false)}
-          >
-            Cancelar
-          </Button>
-          <Button variant="contained" onClick={newCliente}>
-            Registrar
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <Dialog
+        onSave={newCliente}
+      />
+      <MemorizedEditarCliente
         open={abrirModalEditar}
         onClose={() => setAbrirModalEditar(false)}
-        maxWidth="sm"
-      >
-        <DialogTitle>Editar Cliente</DialogTitle>
-        <DialogContent>
-          <TextField
-            name="Nombre"
-            defaultValue={clienteSeleccionado ? clienteSeleccionado.Nombre : ""}
-            fullWidth
-            label="Nombre"
-            variant="outlined"
-            required
-            sx={{ marginTop: 2 }}
-            onChange={ActualizarClienteSeleccionado}
-          />
-          <TextField
-            name="Apellido"
-            defaultValue={
-              clienteSeleccionado ? clienteSeleccionado.Apellido : ""
-            }
-            fullWidth
-            label="Apellido"
-            variant="outlined"
-            required
-            sx={{ marginTop: 2 }}
-            onChange={ActualizarClienteSeleccionado}
-          />
-          <TextField
-            name="Telefono"
-            defaultValue={
-              clienteSeleccionado ? clienteSeleccionado.Telefono : ""
-            }
-            fullWidth
-            label="Telefono"
-            variant="outlined"
-            sx={{ marginTop: 2 }}
-            onChange={ActualizarClienteSeleccionado}
-          />
-          <TextField
-            name="Email"
-            defaultValue={clienteSeleccionado ? clienteSeleccionado.Email : ""}
-            fullWidth
-            label="Email"
-            variant="outlined"
-            required
-            sx={{ marginTop: 2 }}
-            onChange={ActualizarClienteSeleccionado}
-          />
-          <TextField
-            name="Calle"
-            defaultValue={clienteSeleccionado ? clienteSeleccionado.Calle : ""}
-            label="Calle"
-            variant="outlined"
-            sx={{ marginTop: 2, width: "60%" }}
-            onChange={ActualizarClienteSeleccionado}
-          />
-          <TextField
-            name="Numero"
-            defaultValue={clienteSeleccionado ? clienteSeleccionado.Numero : ""}
-            label="Numero"
-            variant="outlined"
-            sx={{ marginTop: 2, width: "35%", marginLeft: "5%" }}
-            onChange={ActualizarClienteSeleccionado}
-          />
-          <TextField
-            name="Barrio"
-            defaultValue={clienteSeleccionado ? clienteSeleccionado.Barrio : ""}
-            fullWidth
-            label="Barrio"
-            variant="outlined"
-            sx={{ marginTop: 2 }}
-            onChange={ActualizarClienteSeleccionado}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => setAbrirModalEditar(false)}
-          >
-            Cancelar
-          </Button>
-          <Button variant="contained" onClick={updateCliente}>
-            Guardar
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <Dialog
+        onSave={updateCliente}
+        cliente={clienteSeleccionado}
+      />
+      <MemorizedBorrarCliente
         open={abrirModalBorrar}
         onClose={() => setAbrirModalBorrar(false)}
-      >
-        <DialogTitle>
-          ¿Estás seguro de que deseas eliminar este cliente?
-        </DialogTitle>
-        <DialogActions>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => setAbrirModalBorrar(false)}
-          >
-            Cancelar
-          </Button>
-          <Button variant="contained" onClick={deleteCliente}>
-            Eliminar
-          </Button>
-        </DialogActions>
-      </Dialog>
+        onDelete={deleteCliente}
+        cliente={clienteBorrar}
+      />
     </div>
   );
 };
