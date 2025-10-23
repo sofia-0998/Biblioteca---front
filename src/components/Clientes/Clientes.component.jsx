@@ -1,119 +1,186 @@
-import React, { useState, useEffect,useMemo  } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { get } from "../../helpers/httpService";
+import React, { useState, useEffect, useMemo, memo } from "react";
+import { get, post, put, remove } from "../../helpers/httpService";
 import {
   MaterialReactTable,
   useMaterialReactTable,
-} from 'material-react-table';
-import { Button, Typography, Dialog, DialogActions, DialogTitle, DialogContent, TextField } from "@mui/material";
-
+} from "material-react-table";
+import { toast } from "react-toastify";
+import { toastConfiguracion } from "../../helpers/toastConfiguracion";
+import { Button, IconButton, Typography } from "@mui/material";
+import { Pencil, Trash } from "lucide-react";
+import NuevoCliente from "./NuevoCliente.component";
+import EditarCliente from "./EditarCliente.componente";
+import BorrarCliente from "./BorrarCliente.component";
 
 const Clientes = () => {
-    const [data, setData] = useState({});
-    const [abrirModal, setAbrirModal] = useState(false);
-    const [nuevoCliente, setNuevoCliente] = useState({});
+  const [data, setData] = useState([]);
+  const [abrirModal, setAbrirModal] = useState(false);
+  const [abrirModalEditar, setAbrirModalEditar] = useState(false);
+  const [clienteSeleccionado, setClienteSeleccionado] = useState();
+  const [abrirModalBorrar, setAbrirModalBorrar] = useState(false);
+  const [clienteBorrar, setClienteBorrar] = useState();
 
-    const columns = useMemo(
-        () => [
-            {
-            accessorKey: 'id',
-            header: 'ID',
-            size: 150,
-            },
-            {
-            accessorKey: 'nombre',
-            header: 'Nombre',
-            size: 150,
-            },
-            {
-            accessorKey: 'apellido',
-            header: 'Apellido',
-            size: 150,
-            },
-            {
-            accessorKey: 'telefono',
-            header: 'Telefono',
-            size: 150,
-            },
-            {
-            accessorKey: 'email',
-            header: 'Email',
-            size: 150,
-            },
-            {
-            accessorKey: 'calle',
-            header: 'Calle',
-            size: 150,
-            },
-            {
-            accessorKey: 'numero',
-            header: 'Numero',
-            size: 150,
-            },
-            {
-            accessorKey: 'barrio',
-            header: 'Barrio',
-            size: 150,
-            },
+  const columns = useMemo(() => [
+    {
+      accessorKey: "Id_Cliente",
+      header: "ID",
+      size: 150,
+    },
+    {
+      accessorKey: "Nombre",
+      header: "Nombre",
+      size: 150,
+    },
+    {
+      accessorKey: "Apellido",
+      header: "Apellido",
+      size: 150,
+    },
+    {
+      accessorKey: "Telefono",
+      header: "Telefono",
+      size: 150,
+    },
+    {
+      accessorKey: "Email",
+      header: "Email",
+      size: 150,
+    },
+    {
+      accessorKey: "Calle",
+      header: "Calle",
+      size: 150,
+    },
+    {
+      accessorKey: "Numero",
+      header: "Numero",
+      size: 150,
+    },
+    {
+      accessorKey: "Barrio",
+      header: "Barrio",
+      size: 150,
+    },
+  ]);
 
-        ]
-    )
-    
-    useEffect(() => {
-        fetchClientes()
-    }, [])
+  useEffect(() => {
+    fetchClientes();
+  }, []);
 
-    const fetchClientes = async() =>{
-        try {
-            const response = await get("/clientes")
-            setData(response)
-        } 
-        catch{console.log("Error")}
+  const fetchClientes = async () => {
+    try {
+      const response = await get("/cliente");
+      setData(response);
+    } catch {
+      console.log("Error");
+      toast.error("¡Error al obtener clientes!", toastConfiguracion);
     }
+  };
 
-    const ActualizarCliente = (e) =>{
-        const {name, value} = e.target
-        setNuevoCliente(clientePrevio =>({
-            ...clientePrevio,
-            [name]:value
-        })) 
+  const newCliente = async (cliente) => {
+    try {
+      await post("/cliente", cliente);
+      setAbrirModal(false);
+      fetchClientes();
+      toast.success("¡Cliente agregado!", toastConfiguracion);
+    } catch {
+      console.log("Error");
+      toast.error("¡Error al agregar cliente!", toastConfiguracion);
     }
+  };
 
-    const table = useMaterialReactTable({
-        columns,
-        data, 
+  const updateCliente = async (cliente) => {
+    try {
+      await put(`/cliente/${cliente.Id_Cliente}`, cliente);
+      setClienteSeleccionado(null);
+      setAbrirModalEditar(false);
+      fetchClientes();
+      toast.success("¡Cliente actualizado!", toastConfiguracion);
+    } catch {
+      console.log("Error");
+      toast.error("¡Error al actualizar cliente!", toastConfiguracion);
+    }
+  };
+
+  const deleteCliente = async () => {
+    try {
+      await remove(`/cliente/${clienteBorrar.Id_Cliente}`);
+      setClienteBorrar(null);
+      setAbrirModalBorrar(false);
+      fetchClientes();
+      toast.success("¡Cliente eliminado!", toastConfiguracion);
+    } catch {
+      console.log("Error");
+      toast.error("¡Error al eliminar cliente!", toastConfiguracion);
+    }
+  };
+
+  const table = useMaterialReactTable({
+    columns,
+    data,
+    enableRowActions: true,
+    displayColumnDefOptions: {
+      "mrt-row-actions": {
+        muiTableHeadCellProps: { align: "left" },
+        size: 100,
+      },
+    },
+    renderRowActions: ({ row }) => (
+      <div>
+        <IconButton
+          variant="contained"
+          onClick={() => {
+            setClienteSeleccionado(row.original);
+            setAbrirModalEditar(true);
+          }}
+        >
+          <Pencil />
+        </IconButton>
+        <IconButton
+          variant="contained"
+          color="error"
+          onClick={() => {
+            setClienteBorrar(row.original);
+            setAbrirModalBorrar(true);
+          }}
+        >
+          <Trash />
+        </IconButton>
+      </div>
+    ),
   });
 
+  //Memorizacion para prevenir renders innecesarios
+  const MemorizedNuevoCliente = memo(NuevoCliente);
+  const MemorizedEditarCliente = memo(EditarCliente);
+  const MemorizedBorrarCliente = memo(BorrarCliente);
 
+  return (
+    <div>
+      <Typography>Clientes</Typography>
+      <Button variant="contained" onClick={() => setAbrirModal(true)}>
+        Registrar Cliente
+      </Button>
+      <MaterialReactTable table={table} />
+      <MemorizedNuevoCliente
+        open={abrirModal}
+        onClose={() => setAbrirModal(false)}
+        onSave={newCliente}
+      />
+      <MemorizedEditarCliente
+        open={abrirModalEditar}
+        onClose={() => setAbrirModalEditar(false)}
+        onSave={updateCliente}
+        cliente={clienteSeleccionado}
+      />
+      <MemorizedBorrarCliente
+        open={abrirModalBorrar}
+        onClose={() => setAbrirModalBorrar(false)}
+        onDelete={deleteCliente}
+        cliente={clienteBorrar}
+      />
+    </div>
+  );
+};
 
-
-    return(
-        <div>
-            <Typography>Clientes</Typography>
-            <Button variant="contained" onClick={() => setAbrirModal(true)}>Registrar Cliente</Button>
-            <MaterialReactTable table={table} />
-
-
-            <Dialog open={abrirModal} onClose={() => setAbrirModal(false)} maxWidth="sm">
-                <DialogTitle>Registrar Cliente</DialogTitle>
-                <DialogContent>
-                    <TextField name="dni" value={nuevoCliente.dni || ""} fullWidth label="Documento" variant="outlined" required sx={{marginTop:1}} onChange={ActualizarCliente}/>
-                    <TextField name="Nombre" fullWidth label="Nombre" variant="outlined" required sx={{marginTop:2}} onChange={ActualizarCliente}/>
-                    <TextField name="Apellido" fullWidth label="Apellido" variant="outlined" required sx={{marginTop:2}} onChange={ActualizarCliente}/>
-                    <TextField name="Telefono" fullWidth label="Telefono" variant="outlined" sx={{marginTop:2}} onChange={ActualizarCliente}/>
-                    <TextField name="Mail" fullWidth label="Mail" variant="outlined" required sx={{marginTop:2}} onChange={ActualizarCliente}/>
-                    <TextField name="Calle" label="Calle" variant="outlined" sx={{marginTop:2, width:"60%"}} onChange={ActualizarCliente}/>
-                    <TextField name="Numero" label="Numero" variant="outlined" sx={{marginTop:2, width:"35%", marginLeft:"5%"}} onChange={ActualizarCliente}/>
-                    <TextField name="Barrio" fullWidth label="Barrio" variant="outlined" sx={{marginTop:2}} onChange={ActualizarCliente}/>
-                </DialogContent>
-                <DialogActions>
-                    <Button variant="contained" color="error" onClick={() => setAbrirModal(false)}>Cancelar</Button>
-                    <Button variant="contained">Registrar</Button>
-                </DialogActions>
-            </Dialog>
-
-        </div>
-    )
-}
-
-export default Clientes
+export default Clientes;
