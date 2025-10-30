@@ -148,6 +148,7 @@ const Libros = () => {
     try {
       await remove(`/libro/${libro.ID_Libro}`);
       toast.success("Libro eliminado con exito", toastConfiguracion);
+      setAbrirModalBorrar(false)
       fetchLibros();
     } catch {
       console.log("Error");
@@ -176,7 +177,10 @@ const Libros = () => {
         >
           <Pencil />
         </IconButton>
-        <IconButton variant="contained" color="error" onClick={() => {}}>
+        <IconButton variant="contained" color="error" onClick={() => {
+          setLibroSeleccionado(row.original);
+          setAbrirModalBorrar(true)
+        }}>
           <Trash />
         </IconButton>
       </div>

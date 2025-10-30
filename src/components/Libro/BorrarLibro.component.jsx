@@ -9,10 +9,10 @@ const BorrarLibro = ({ open, onClose, onDelete, libro }) => {
         {libro ? libro.Titulo : ""}?
       </DialogTitle>
       <DialogActions>
-        <Button onClick={onClose} color="secondary">
+        <Button variant="contained" onClick={onClose} color="error">
           Cancelar
         </Button>
-        <Button onClick={() => onDelete(libro)} color="primary">
+        <Button variant="contained" onClick={() => onDelete(libro)} color="primary">
           Confirmar
         </Button>
       </DialogActions>

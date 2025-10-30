@@ -2,16 +2,24 @@ import React, { useState } from "react";
 import FondoPantalla from "../../assets/fondoLogin.jpg";
 import { Button, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { post } from "../../helpers/httpService";
+import { decodificarToken } from "../../helpers/jwtUtils";
 
 const Login = () => {
   const [usuario, setUsuario] = useState("");
   const [contraseña, setContraseña] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    console.log("Usuario:", usuario);
-    console.log("Contraseña:", contraseña);
-    navigate("/home");
+  const handleLogin = async () => {
+    try{
+      const response = await post("/Login", {nombreUsuario:usuario, contrasena:contraseña})
+      if (response.access_token){
+        const tokenDecodificado = await decodificarToken(response.access_token)
+        
+        navigate("/home")
+      }
+    }
+    catch (error){console.error("Error de Login", error)}
   };
 
   return (

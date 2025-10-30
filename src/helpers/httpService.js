@@ -1,14 +1,12 @@
 //usamos una variable de entorno para la url del backend
 const URL =
-  import.meta.env.VITE_BACKEND_URL || "https://8023af88f530.ngrok-free.app/api";
+  import.meta.env.VITE_BACKEND_URL || "http://localhost:51559/api";
 
 export const get = async (url, params) => {
   const queryString = new URLSearchParams(params).toString();
   const response = await fetch(`${URL}${url}?${queryString}`, {
     method: "GET",
-    headers: {
-      "ngrok-skip-browser-warning": "true",
-    },
+    
   });
   if (!response.ok) throw new Error(`Error: ${response.statusText}`);
   // Si el status es 204 (No Content), no hay cuerpo para parsear
