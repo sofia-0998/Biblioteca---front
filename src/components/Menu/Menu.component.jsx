@@ -6,6 +6,7 @@ import { Menu as MenuIcon, House } from "lucide-react";
 import { Users } from "lucide-react";
 import { BookOpenText } from "lucide-react";
 import { LibraryBig } from "lucide-react";
+import { User } from "lucide-react";
 
 import {
   AppBar,
@@ -177,6 +178,32 @@ const Menu = () => {
                 style={{ marginLeft: 15, marginTop: "5px" }}
               >
                 Alquiler
+              </Typography>
+            </Box>
+          </ListItem>
+          <ListItem
+            button
+            component={Link}
+            to="/usuarios"
+            onClick={() => setOpenMenu(false)}
+            sx={{
+              py: 1.5,
+              px: 2,
+              display: "flex",
+              alignItems: "center",
+              borderRadius:
+                location.pathname === "/usuarios" ? "30px 0 0 30px" : "inherit",
+              backgroundColor:
+                location.pathname === "/usuarios" ? "#f5f5f5" : "inherit",
+            }}
+          >
+            <Box display="flex" alignItems="center">
+              <User sx={{ fontSize: 40 }} />
+              <Typography
+                variant="h6"
+                style={{ marginLeft: 15, marginTop: "5px" }}
+              >
+                Usuarios
               </Typography>
             </Box>
           </ListItem>
