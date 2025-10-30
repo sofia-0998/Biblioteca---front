@@ -9,6 +9,7 @@ import Home from "../components/Home/Home.component";
 import Clientes from "../components/Clientes/Clientes.component";
 import Libros from "../components/Libro/Libros.component";
 import Usuarios from "../components/Usuarios/Usuarios.component";
+import Alquiler from "../components/Alquiler/Alquiler.component";
 
 const Router = () => {
   const location = useLocation();
@@ -44,6 +45,7 @@ const Router = () => {
             <Route path="/clientes" element={<Clientes />} />
             <Route path="/libros" element={<Libros />} />
             <Route path="/usuarios" element={<Usuarios />} />
+            <Route path="/alquiler" element={<Alquiler />} />
           </Routes>
         </div>
       </div>
