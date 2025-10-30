@@ -1,12 +1,17 @@
+import { estaAutenticado, cerrarSesion } from "./authService";
+
 //usamos una variable de entorno para la url del backend
-const URL =
-  import.meta.env.VITE_BACKEND_URL || "http://localhost:51559/api";
+const URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:51559/api";
 
 export const get = async (url, params) => {
+  await verificarAutenticacion();
   const queryString = new URLSearchParams(params).toString();
   const response = await fetch(`${URL}${url}?${queryString}`, {
     method: "GET",
-    
+    headers: {
+      "Content-Type": "application/json",
+      "ngrok-skip-browser-warning": "true",
+    },
   });
   if (!response.ok) throw new Error(`Error: ${response.statusText}`);
   // Si el status es 204 (No Content), no hay cuerpo para parsear
@@ -30,6 +35,7 @@ export const post = async (url, data) => {
 };
 
 export const put = async (url, data) => {
+  await verificarAutenticacion();
   const response = await fetch(`${URL}${url}`, {
     method: "PUT",
     headers: {
@@ -45,6 +51,7 @@ export const put = async (url, data) => {
 };
 
 export const remove = async (url) => {
+  await verificarAutenticacion();
   const response = await fetch(`${URL}${url}`, {
     method: "DELETE",
     headers: {
@@ -74,6 +81,7 @@ export const remove = async (url) => {
 };
 
 export const patch = async (url, data) => {
+  await verificarAutenticacion();
   const response = await fetch(`${URL}${url}`, {
     method: "PATCH",
     headers: {
@@ -86,4 +94,10 @@ export const patch = async (url, data) => {
   // Si el status es 204 (No Content), no hay cuerpo para parsear
   if (response.status === 204) return null;
   return response.json();
+};
+
+const verificarAutenticacion = async () => {
+  if (!estaAutenticado()) {
+    cerrarSesion();
+  }
 };

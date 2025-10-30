@@ -11,15 +11,21 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    try{
-      const response = await post("/Login", {nombreUsuario:usuario, contrasena:contraseña})
-      if (response.access_token){
-        const tokenDecodificado = await decodificarToken(response.access_token)
-        
-        navigate("/home")
+    try {
+      const response = await post("/Login", {
+        nombreUsuario: usuario,
+        contrasena: contraseña,
+      });
+      if (response.access_token) {
+        const tokenDecodificado = decodificarToken(response.access_token);
+        localStorage.setItem("token", response.access_token);
+        localStorage.setItem("rol", tokenDecodificado.rol);
+
+        navigate("/home");
       }
+    } catch (error) {
+      console.error("Error de Login", error);
     }
-    catch (error){console.error("Error de Login", error)}
   };
 
   return (
