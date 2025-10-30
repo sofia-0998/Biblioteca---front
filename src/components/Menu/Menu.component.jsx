@@ -2,12 +2,10 @@ import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 //use navigate se usa para navegar mediante codigo
 //Link se usa para navegar mediante un html
-import { Menu as MenuIcon, House } from 'lucide-react';
-import { Users } from 'lucide-react';
-import { BookOpenText } from 'lucide-react';
-import { LibraryBig } from 'lucide-react';
-
-
+import { Menu as MenuIcon, House } from "lucide-react";
+import { Users } from "lucide-react";
+import { BookOpenText } from "lucide-react";
+import { LibraryBig } from "lucide-react";
 
 import {
   AppBar,
@@ -83,8 +81,12 @@ const Menu = () => {
             sx={{
               py: 1.5,
               px: 2,
-              display: 'flex',
-              alignItems: 'center',
+              display: "flex",
+              alignItems: "center",
+              borderRadius:
+                location.pathname === "/home" ? "30px 0 0 30px" : "inherit",
+              backgroundColor:
+                location.pathname === "/home" ? "#f5f5f5" : "inherit",
             }}
           >
             <Box display="flex" alignItems="center">
@@ -106,8 +108,12 @@ const Menu = () => {
             sx={{
               py: 1.5,
               px: 2,
-              display: 'flex',
-              alignItems: 'center',
+              display: "flex",
+              alignItems: "center",
+              borderRadius:
+                location.pathname === "/clientes" ? "30px 0 0 30px" : "inherit",
+              backgroundColor:
+                location.pathname === "/clientes" ? "#f5f5f5" : "inherit",
             }}
           >
             <Box display="flex" alignItems="center">
@@ -129,8 +135,12 @@ const Menu = () => {
             sx={{
               py: 1.5,
               px: 2,
-              display: 'flex',
-              alignItems: 'center',
+              display: "flex",
+              alignItems: "center",
+              borderRadius:
+                location.pathname === "/libros" ? "30px 0 0 30px" : "inherit",
+              backgroundColor:
+                location.pathname === "/libros" ? "#f5f5f5" : "inherit",
             }}
           >
             <Box display="flex" alignItems="center">
@@ -152,8 +162,12 @@ const Menu = () => {
             sx={{
               py: 1.5,
               px: 2,
-              display: 'flex',
-              alignItems: 'center',
+              display: "flex",
+              alignItems: "center",
+              borderRadius:
+                location.pathname === "/alquiler" ? "30px 0 0 30px" : "inherit",
+              backgroundColor:
+                location.pathname === "/alquiler" ? "#f5f5f5" : "inherit",
             }}
           >
             <Box display="flex" alignItems="center">

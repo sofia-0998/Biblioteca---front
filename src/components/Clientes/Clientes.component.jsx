@@ -22,7 +22,7 @@ const Clientes = () => {
 
   const columns = useMemo(() => [
     {
-      accessorKey: "Id_Cliente",
+      accessorKey: "ID_Cliente",
       header: "ID",
       size: 150,
     },
@@ -69,7 +69,7 @@ const Clientes = () => {
 
   const fetchClientes = async () => {
     try {
-      const response = await get("/cliente");
+      const response = await get("/Cliente");
       setData(response);
     } catch {
       console.log("Error");
@@ -79,7 +79,7 @@ const Clientes = () => {
 
   const newCliente = async (cliente) => {
     try {
-      await post("/cliente", cliente);
+      await post("/Cliente", cliente);
       setAbrirModal(false);
       fetchClientes();
       toast.success("¡Cliente agregado!", toastConfiguracion);
@@ -91,7 +91,7 @@ const Clientes = () => {
 
   const updateCliente = async (cliente) => {
     try {
-      await put(`/cliente/${cliente.Id_Cliente}`, cliente);
+      await put(`/Cliente/${cliente.ID_Cliente}`, cliente);
       setClienteSeleccionado(null);
       setAbrirModalEditar(false);
       fetchClientes();
@@ -104,7 +104,7 @@ const Clientes = () => {
 
   const deleteCliente = async () => {
     try {
-      await remove(`/cliente/${clienteBorrar.Id_Cliente}`);
+      await remove(`/Cliente/${clienteBorrar.ID_Cliente}`);
       setClienteBorrar(null);
       setAbrirModalBorrar(false);
       fetchClientes();

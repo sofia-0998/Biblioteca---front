@@ -1,14 +1,6 @@
 import React, { useState } from "react";
 import FondoPantalla from "../../assets/fondoLogin.jpg";
-import {
-  Button,
-  Typography,
-  Dialog,
-  DialogActions,
-  DialogTitle,
-  DialogContent,
-  TextField,
-} from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
